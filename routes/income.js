@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../db/database');
 
 // In-memory array to store income entries
-const income = [];
 const INCOME_TYPES = ['Contribution', 'Grant', 'Sale', 'Donation', 'Other'];
 
 // POST /income
@@ -40,6 +39,20 @@ router.get('/', (req, res) => {
 
 router.get('/types', (req, res) => {
   res.json(INCOME_TYPES);
+});
+
+// DELETE /income/:id
+router.delete('/:id', (req, res) => {
+  const incomeId = parseInt(req.params.id);
+
+  const stmt = db.prepare('DELETE FROM income WHERE id = ?');
+  const result = stmt.run(incomeId);
+
+  if (result.changes === 0) {
+    return res.status(404).json({ error: 'Income record not found.' });
+  }
+
+  res.json({ message: 'Income deleted.', id: incomeId });
 });
 
 module.exports = router;
