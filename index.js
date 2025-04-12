@@ -9,6 +9,9 @@ app.use(express.json());
 const expensesRoute = require('./routes/expenses');
 app.use('/expenses', expensesRoute);
 
+const incomeRoute = require('./routes/income');
+app.use('/income', incomeRoute);
+
 // Root route (optional)
 app.get('/', (req, res) => {
   res.send('Vizune Management Studio API is running 🚀');
