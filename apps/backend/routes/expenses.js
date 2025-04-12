@@ -1,65 +1,71 @@
 const express = require('express');
-const router = express.Router();
-const Database = require('better-sqlite3');
-const db = new Database('./db/vizune.db');  
+const { db } = require('../db/db'); // your drizzle instance
+const { expenses } = require('../schema'); // your expenses table schema
 
-// In-memory array to store expenses
+const router = express.Router();
+
 const EXPENSE_CATEGORIES = ['Education', 'Design', 'Artwork', 'Software', 'Other'];
 
 // POST /expenses
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { date, amount, vendor, category, notes } = req.body;
 
   if (!date || !amount || !vendor || !category) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
-  const stmt = db.prepare(`
-    INSERT INTO expenses (date, amount, vendor, category, notes)
-    VALUES (?, ?, ?, ?, ?)
-  `);
-  const result = stmt.run(
-    date,
-    amount,
-    vendor,
-    EXPENSE_CATEGORIES.includes(category) ? category : 'Other',
-    notes || ''
-  );
+  const safeCategory = EXPENSE_CATEGORIES.includes(category) ? category : 'Other';
 
-  const newExpense = {
-    id: result.lastInsertRowid,
-    date,
-    amount,
-    vendor,
-    category: EXPENSE_CATEGORIES.includes(category) ? category : 'Other',
-    notes: notes || ''
-  };
+  try {
+    const result = await db
+      .insert(expenses)
+      .values({ date, amount, vendor, category: safeCategory, notes })
+      .returning();
 
-  res.status(201).json(newExpense);
+    const newExpense = result[0];
+
+    res.status(201).json(newExpense);
+  } catch (err) {
+    console.error('Error inserting expense:', err);
+    res.status(500).json({ error: 'Failed to insert expense.' });
+  }
 });
 
 // GET /expenses
-router.get('/', (req, res) => {
-  const rows = db.prepare('SELECT * FROM expenses').all();
-  res.json(rows);
+router.get('/', async (req, res) => {
+  try {
+    const allExpenses = await db.select().from(expenses);
+    res.json(allExpenses);
+  } catch (err) {
+    console.error('Error fetching expenses:', err);
+    res.status(500).json({ error: 'Failed to fetch expenses.' });
+  }
 });
 
+// GET /expenses/types
 router.get('/types', (req, res) => {
   res.json(EXPENSE_CATEGORIES);
 });
 
 // DELETE /expenses/:id
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const expenseId = parseInt(req.params.id);
 
-  const stmt = db.prepare('DELETE FROM expenses WHERE id = ?');
-  const result = stmt.run(expenseId);
+  try {
+    const result = await db
+      .delete(expenses)
+      .where(expenses.id.eq(expenseId))
+      .returning();
 
-  if (result.changes === 0) {
-    return res.status(404).json({ error: 'Expense not found.' });
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'Expense not found.' });
+    }
+
+    res.json({ message: 'Expense deleted.', id: expenseId });
+  } catch (err) {
+    console.error('Error deleting expense:', err);
+    res.status(500).json({ error: 'Failed to delete expense.' });
   }
-
-  res.json({ message: 'Expense deleted.', id: expenseId });
 });
 
 module.exports = router;

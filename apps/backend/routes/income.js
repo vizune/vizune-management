@@ -1,59 +1,70 @@
 const express = require('express');
 const router = express.Router();
-const Database = require('better-sqlite3');
-const db = new Database('./db/vizune.db'); 
+const { db } = require('../db/db'); // your drizzle instance
+const { income } = require('../schema'); // your income table schema
 
-// In-memory array to store income entries
 const INCOME_TYPES = ['Contribution', 'Grant', 'Sale', 'Donation', 'Other'];
 
 // POST /income
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { date, amount, source, type, notes } = req.body;
 
   if (!date || !amount || !source) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
-  const stmt = db.prepare(`
-    INSERT INTO income (date, amount, source, type, notes)
-    VALUES (?, ?, ?, ?, ?)
-  `);
-  const result = stmt.run(date, amount, source, INCOME_TYPES.includes(type) ? type : 'Other', notes || '');
+  const safeType = INCOME_TYPES.includes(type) ? type : 'Other';
 
-  const newIncome = {
-    id: result.lastInsertRowid,
-    date,
-    amount,
-    source,
-    type: INCOME_TYPES.includes(type) ? type : 'Other',
-    notes: notes || ''
-  };
+  try {
+    const result = await db
+      .insert(income)
+      .values({ date, amount, source, type: safeType, notes })
+      .returning();
 
-  res.status(201).json(newIncome);
+    const newIncome = result[0];
+
+    res.status(201).json(newIncome);
+  } catch (err) {
+    console.error('Error inserting income:', err);
+    res.status(500).json({ error: 'Failed to insert income record.' });
+  }
 });
 
 // GET /income
-router.get('/', (req, res) => {
-  const rows = db.prepare('SELECT * FROM income').all();
-  res.json(rows);
+router.get('/', async (req, res) => {
+  try {
+    const allIncome = await db.select().from(income);
+    res.json(allIncome);
+  } catch (err) {
+    console.error('Error fetching income:', err);
+    res.status(500).json({ error: 'Failed to fetch income records.' });
+  }
 });
 
+// GET /income/types
 router.get('/types', (req, res) => {
   res.json(INCOME_TYPES);
 });
 
 // DELETE /income/:id
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const incomeId = parseInt(req.params.id);
 
-  const stmt = db.prepare('DELETE FROM income WHERE id = ?');
-  const result = stmt.run(incomeId);
+  try {
+    const result = await db
+      .delete(income)
+      .where(income.id.eq(incomeId))
+      .returning();
 
-  if (result.changes === 0) {
-    return res.status(404).json({ error: 'Income record not found.' });
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'Income record not found.' });
+    }
+
+    res.json({ message: 'Income deleted.', id: incomeId });
+  } catch (err) {
+    console.error('Error deleting income:', err);
+    res.status(500).json({ error: 'Failed to delete income record.' });
   }
-
-  res.json({ message: 'Income deleted.', id: incomeId });
 });
 
 module.exports = router;
