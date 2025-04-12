@@ -1,9 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "dist",
-    "module": "CommonJS",
-    "moduleResolution": "node"
+    "baseUrl": ".",
+    "paths": {
+      "@vizune/shared/*": ["../../packages/shared/*"]
+    }
   },
   "include": ["src"]
 }
