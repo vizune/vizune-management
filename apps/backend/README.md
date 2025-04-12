@@ -37,7 +37,7 @@ Built with modern TypeScript, PostgreSQL, Drizzle ORM, and schema validation via
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/SashaRichardson/vizune-management.git
+git clone https://github.com/vizune/vizune-management.git
 cd vizune-management
 ```
 
