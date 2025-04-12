@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/database');
+const Database = require('better-sqlite3');
+const db = new Database('./db/vizune.db'); 
 
 // In-memory array to store income entries
 const INCOME_TYPES = ['Contribution', 'Grant', 'Sale', 'Donation', 'Other'];
