@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../db/database');
 
 // In-memory array to store income entries
 const income = [];
@@ -13,8 +14,14 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
+  const stmt = db.prepare(`
+    INSERT INTO income (date, amount, source, type, notes)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(date, amount, source, INCOME_TYPES.includes(type) ? type : 'Other', notes || '');
+
   const newIncome = {
-    id: income.length + 1,
+    id: result.lastInsertRowid,
     date,
     amount,
     source,
@@ -22,13 +29,13 @@ router.post('/', (req, res) => {
     notes: notes || ''
   };
 
-  income.push(newIncome);
   res.status(201).json(newIncome);
 });
 
 // GET /income
 router.get('/', (req, res) => {
-  res.json(income);
+  const rows = db.prepare('SELECT * FROM income').all();
+  res.json(rows);
 });
 
 router.get('/types', (req, res) => {
