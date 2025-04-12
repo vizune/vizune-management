@@ -19,13 +19,17 @@ A lightweight backend API to help solo founders and creators manage their compan
 - **SQLite** via `better-sqlite3` – Simple, fast, file-based database
 - **Postman** (or similar) – For testing endpoints
 
+## 🚨 CORS Setup
+
+This project uses **CORS** (Cross-Origin Resource Sharing) middleware to allow your frontend (running on `http://localhost:3000`) to communicate with the backend API (running on `http://localhost:4000`). CORS is essential for enabling the frontend and backend to work together locally during development.
+
 ---
 
 ## 🛠 Setup Instructions
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/vizune-management-studio.git
+git clone https://github.com/SashaRichardson/vizune-management.git
 cd vizune-management-studio
 ```
 
@@ -91,7 +95,7 @@ The server will start on http://localhost:4000
 ```
 
 **Valid types**:  
-`Contribution`, `Grant`, `Grant`, `Donation`, `Other` 
+`Contribution`, `Grant`, `Sale`, `Donation`, `Other` 
 
 ---
 
