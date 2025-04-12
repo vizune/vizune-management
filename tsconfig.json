@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@vizune/shared": ["packages/shared/src"]
+      },
+      "moduleResolution": "node",
+      "module": "ESNext",
+      "target": "ESNext",
+      "lib": ["ESNext"],
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true
+    },
+    "include": ["apps", "packages"]
+}

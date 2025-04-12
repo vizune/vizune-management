@@ -3,6 +3,9 @@ const cors = require('cors');
 const app = express();
 const PORT = 4000;
 
+// Enable CORS middleware
+app.use(cors());  // Allow cross-origin requests from frontend (on port 3000)
+
 // Middleware
 app.use(express.json());
 
