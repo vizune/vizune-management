@@ -1,6 +1,6 @@
-const { pgTable, serial, text, real } = require('drizzle-orm/pg-core');
+import { pgTable, serial, text, real } from 'drizzle-orm/pg-core';
 
-const expenses = pgTable('expenses', {
+export const expenses = pgTable('expenses', {
   id: serial('id').primaryKey(),
   date: text('date').notNull(),
   amount: real('amount').notNull(),
@@ -9,8 +9,7 @@ const expenses = pgTable('expenses', {
   notes: text('notes'),
 });
 
-
-const income = pgTable('income', {
+export const income = pgTable('income', {
   id: serial('id').primaryKey(),
   date: text('date').notNull(),
   amount: real('amount').notNull(),
@@ -18,5 +17,3 @@ const income = pgTable('income', {
   type: text('type').default('Other'),
   notes: text('notes'),
 });
-
-module.exports = { income, expenses };
