@@ -1,48 +1,73 @@
 # Vizune Management Studio – Backend API 💼
 
-A lightweight backend API to help solo founders and creators manage their company expenses, income, and financial records. Built with Node.js, Express, and SQLite — no monthly fees, no fuss.
+A full-stack-friendly backend API to help solo founders and creatives manage their company expenses, income, and financial records.
+
+Built with modern TypeScript, PostgreSQL, Drizzle ORM, and schema validation via Zod — no monthly fees, no fuss, just clarity and control.
+
+---
 
 ## 🚀 Features
 
-- 💸 **Track expenses** – Log business-related spending like courses, software, art commissions, etc.
-- 💰 **Log income** – Record funding sources like personal contributions, grants, and sales.
-- ✅ **Type/category validation** – Keep your data clean using predefined types.
-- 🗑️ **Delete entries** – Easily remove any incorrect or outdated records.
-- 📦 **Data persistence** – All data is stored in a local SQLite database.
-- 🧠 **Simple API** – Designed for quick local use or future frontend integration.
+- 💸 **Track expenses** – Log spending on courses, software, art, and more.
+- 💰 **Log income** – Record sources like contributions, grants, and sales.
+- ✅ **Schema validation with Zod** – Ensure clean, structured data.
+- 🔄 **Type-safe PostgreSQL access** – Powered by Drizzle ORM.
+- 🧠 **Shared Zod schemas** – Used across backend and frontend.
+- 🗑️ **Delete entries** – Easily remove outdated or incorrect records.
+- 🌐 **CORS-enabled** – Ready for frontend integration (localhost:3000 ⇄ 4000).
+- 🦾 **Built in a pnpm monorepo** – Shared logic, cleaner architecture.
 
 ---
 
 ## 📦 Tech Stack
 
-- **Node.js + Express** – REST API framework
-- **SQLite** via `better-sqlite3` – Simple, fast, file-based database
-- **Postman** (or similar) – For testing endpoints
-
-## 🚨 CORS Setup
-
-This project uses **CORS** (Cross-Origin Resource Sharing) middleware to allow your frontend (running on `http://localhost:3000`) to communicate with the backend API (running on `http://localhost:4000`). CORS is essential for enabling the frontend and backend to work together locally during development.
+| Layer       | Tooling                                       |
+|-------------|-----------------------------------------------|
+| Language    | TypeScript                                    |
+| Backend     | Node.js + Express                             |
+| ORM         | [Drizzle ORM](https://orm.drizzle.team/)      |
+| Database    | PostgreSQL (local via Docker)                 |
+| Validation  | [Zod](https://zod.dev)                        |
+| Structure   | pnpm workspaces + monorepo (`apps/` + `packages/`) |
 
 ---
 
 ## 🛠 Setup Instructions
 
 ### 1. Clone the repo
+
 ```bash
 git clone https://github.com/SashaRichardson/vizune-management.git
-cd vizune-management-studio
+cd vizune-management
 ```
 
-### 2. Install dependencies
+### 2. Install dependencies (monorepo root)
 ```bash
-npm install
+pnpm install
 ```
 
-### 3. Start the server
+### 3. Start PostgreSQL with Docker
 ```bash
-npm run dev
+docker run --name vizune-db \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=admin \
+  -e POSTGRES_DB=vizune \
+  -p 5432:5432 \
+  -d postgres
 ```
-The server will start on http://localhost:4000
+
+### 4. Apply the database schema
+```bash
+pnpm --filter backend drizzle-kit push
+```
+
+### 5. Run the backend server
+```bash
+pnpm --filter backend dev
+```
+
+Your server will be running on:
+📡 `http://localhost:4000`
 
 
 ## 📬 API Endpoints
@@ -99,4 +124,25 @@ The server will start on http://localhost:4000
 
 ---
 
-⚠️ Note: The SQLite database file (`vizune.db`) is ignored by Git. If cloning this repo, you'll need to run the server once to auto-generate the database.
+
+## 🧠 Project Structure
+
+```bash
+vizune-management/
+├─ apps/
+│  ├─ backend/           # Express API with TypeScript + Drizzle
+│  └─ frontend/          # (Coming soon) Next.js app
+├─ packages/
+│  └─ shared/            # Shared Zod schemas
+└─ pnpm-workspace.yaml
+```
+
+## 🌙 Coming Soon
+
+* Frontend with Next.js + shared Zod validation
+
+* Expense charts & dashboards
+
+* Export to CSV
+
+* Authentication layer (optional)
