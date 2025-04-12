@@ -3,6 +3,7 @@ const router = express.Router();
 
 // In-memory array to store income entries
 const income = [];
+const INCOME_TYPES = ['Contribution', 'Grant', 'Sale', 'Donation', 'Other'];
 
 // POST /income
 router.post('/', (req, res) => {
@@ -17,7 +18,7 @@ router.post('/', (req, res) => {
     date,
     amount,
     source,
-    type: type || 'Other',
+    type: INCOME_TYPES.includes(type) ? type : 'Other',
     notes: notes || ''
   };
 
@@ -28,6 +29,10 @@ router.post('/', (req, res) => {
 // GET /income
 router.get('/', (req, res) => {
   res.json(income);
+});
+
+router.get('/types', (req, res) => {
+  res.json(INCOME_TYPES);
 });
 
 module.exports = router;

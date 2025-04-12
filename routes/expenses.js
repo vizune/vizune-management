@@ -3,6 +3,7 @@ const router = express.Router();
 
 // In-memory array to store expenses
 const expenses = [];
+const EXPENSE_CATEGORIES = ['Education', 'Design', 'Artwork', 'Software', 'Other'];
 
 // POST /expenses
 router.post('/', (req, res) => {
@@ -17,7 +18,7 @@ router.post('/', (req, res) => {
     date,
     amount,
     vendor,
-    category,
+    category: EXPENSE_CATEGORIES.includes(category) ? category : 'Other',
     notes: notes || ''
   };
 
@@ -28,6 +29,10 @@ router.post('/', (req, res) => {
 // GET /expenses
 router.get('/', (req, res) => {
   res.json(expenses);
+});
+
+router.get('/types', (req, res) => {
+  res.json(EXPENSE_CATEGORIES);
 });
 
 // DELETE /expenses/:id
