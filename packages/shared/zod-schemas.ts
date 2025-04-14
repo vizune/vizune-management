@@ -7,7 +7,7 @@ export const ExpenseInputSchema = z.object({
   date: z.string(),
   amount: z.number(),
   vendor: z.string(),
-  category: z.string(),
+  category: z.enum(EXPENSE_CATEGORIES),
   notes: z.string().optional(),
 });
 export type ExpenseInput = z.infer<typeof ExpenseInputSchema>;
@@ -19,7 +19,7 @@ export const IncomeInputSchema = z.object({
   date: z.string(),
   amount: z.number(),
   source: z.string(),
-  type: z.string(),
+  type: z.enum(INCOME_TYPES),
   notes: z.string().optional(),
 });
 export type IncomeInput = z.infer<typeof IncomeInputSchema>;

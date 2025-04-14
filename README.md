@@ -48,12 +48,7 @@ pnpm install
 
 ### 3. Start PostgreSQL with Docker
 ```bash
-docker run --name vizune-db \
-  -e POSTGRES_USER=admin \
-  -e POSTGRES_PASSWORD=admin \
-  -e POSTGRES_DB=vizune \
-  -p 5432:5432 \
-  -d postgres
+docker run --name vizune-db -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=vizune -p 5432:5432 -d postgres
 ```
 
 ### 4. Apply the database schema
@@ -76,10 +71,10 @@ Your server will be running on:
 
 | Method | Endpoint           | Description              |
 |--------|--------------------|--------------------------|
-| POST   | `/expenses`        | Add a new expense        |
-| GET    | `/expenses`        | List all expenses        |
-| GET    | `/expenses/types`  | Get valid categories     |
-| DELETE | `/expenses/:id`    | Delete an expense        |
+| POST   | `/api/expenses`        | Add a new expense        |
+| GET    | `/api/expenses`        | List all expenses        |
+| GET    | `/api/expenses/types`  | Get valid categories     |
+| DELETE | `/api/expenses/:id`    | Delete an expense        |
 
 #### Sample Expense Request
 
@@ -102,10 +97,10 @@ Your server will be running on:
 
 | Method | Endpoint         | Description              |
 |--------|------------------|--------------------------|
-| POST   | `/income`        | Log income or funding    |
-| GET    | `/income`        | List all income entries  |
-| GET    | `/income/types`  | Get valid income types   |
-| DELETE | `/income/:id`    | Delete an income entry   |
+| POST   | `/api/income`        | Log income or funding    |
+| GET    | `/api/income`        | List all income entries  |
+| GET    | `/api/income/types`  | Get valid income types   |
+| DELETE | `/api/income/:id`    | Delete an income entry   |
 
 #### Sample Income Request
 

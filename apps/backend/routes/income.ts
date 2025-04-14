@@ -4,10 +4,9 @@ import { income } from '../schema';
 import { eq } from 'drizzle-orm';
 import {
   IncomeInputSchema,
-  IncomeInput,
   INCOME_TYPES,
-  IncomeType,
-} from '@vizune/shared/zod-schemas';
+  IncomeType
+} from '../../../packages/shared/zod-schemas'
 
 const router = Router();
 
@@ -33,8 +32,16 @@ router.post('/', (req: Request, res: Response): void => {
 
       res.status(201).json(result[0]);
     } catch (err) {
-      console.error('Error inserting income:', err);
-      res.status(500).json({ error: 'Failed to insert income record.' });
+      console.error('💥 Full error:', err);
+      console.error('🧨 Type:', typeof err);
+    
+      res.status(500).json({
+        error: 'Failed to insert expense.',
+        name: err instanceof Error ? err.name : 'Unknown',
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : '',
+        raw: JSON.stringify(err, Object.getOwnPropertyNames(err), 2)
+      });
     }
   })();
 });
